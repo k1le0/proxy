@@ -1,8 +1,8 @@
 package main
 
 import (
-	"proxy/socket5/client"
-	"proxy/socket5/server"
+	"github.com/k1le0/proxy/http/client"
+	"github.com/k1le0/proxy/http/server"
 )
 
 func main() {

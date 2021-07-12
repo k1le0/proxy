@@ -1,1 +1,1 @@
-module "proxy"
+module "github.com/k1le0/proxy"

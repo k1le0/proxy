@@ -1,10 +1,10 @@
 package server
 
 import (
+	"github.com/k1le0/proxy/socket5/client"
 	"log"
 	"math/rand"
 	"net"
-	"proxy/socket5/client"
 	"strconv"
 )
 
