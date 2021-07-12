@@ -4,7 +4,6 @@ import (
 	"log"
 	"net"
 	"strconv"
-	"time"
 )
 
 type Client struct {
@@ -29,19 +28,17 @@ func (c *Client) Start() {
 func (c *Client) Stop() {}
 
 func (c *Client) Handle(conn net.Conn) {
-	for i := 0; i < 5; i++ {
-		time.Sleep(time.Second)
-
+	for {
 		_, err := conn.Write([]byte("hello"))
 		if err != nil {
 			log.Println(err)
 			continue
 		}
 	}
-	isClose := "CLOSE"
-	_, err := conn.Write([]byte(isClose))
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
+	//isClose := "CLOSE"
+	//_, err := conn.Write([]byte(isClose))
+	//if err != nil {
+	//	log.Println(err.Error())
+	//	return
+	//}
 }

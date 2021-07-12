@@ -43,12 +43,12 @@ func (c *Client) Handle(conn net.Conn) {
 			continue
 		}
 	}
-	isClose := "CLOSE"
-	_, err := conn.Write([]byte(isClose))
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
+	//isClose := "CLOSE"
+	//_, err := conn.Write([]byte(isClose))
+	//if err != nil {
+	//	log.Println(err.Error())
+	//	return
+	//}
 }
 
 func (c *Client) HeartBeat(conn net.Conn) {

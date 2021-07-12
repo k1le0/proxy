@@ -1,16 +1,16 @@
 package server
 
 import (
-	"github.com/k1le0/proxy/socket5/client"
 	"log"
 	"math/rand"
 	"net"
 	"strconv"
+	"time"
 )
 
 // 维护一个clientMap
 var (
-	clientMap = make(map[string]client.CliConn)
+	serverMap = make(map[string]ServConn)
 )
 
 type Server struct {
@@ -36,18 +36,41 @@ func (s *Server) Start() {
 		return
 	}
 
-	for {
-		conn, err := listener.Accept()
-		dealConn := &ServConn{
-			Conn: conn,
-			Uid:  rand.Int31(),
-		}
-		if err != nil {
-			log.Println(err.Error())
-			continue
-		}
+	go func() {
+		for {
+			conn, err := listener.Accept()
+			if err != nil {
+				log.Println(err.Error())
+				break
+			}
 
-		go s.Handle(dealConn.Conn)
+			tcpListener := listener.(*net.TCPListener)
+			err = tcpListener.SetDeadline(time.Now().Add(time.Second * 5))
+			if err != nil {
+				return
+			}
+
+			dealConn := &ServConn{
+				Conn: conn,
+				Uid:  rand.Int31(),
+			}
+			serverMap[dealConn.Conn.RemoteAddr().String()] = *dealConn
+		}
+	}()
+
+	for _, v := range serverMap {
+		//conn, err := listener.Accept()
+		//if err != nil {
+		//	log.Println(err.Error())
+		//	continue
+		//}
+		//dealConn := &ServConn{
+		//	Conn: conn,
+		//	Uid:  rand.Int31(),
+		//}
+		//serverMap[dealConn.Conn.RemoteAddr().String()] = *dealConn
+
+		go s.Handle(v.Conn)
 		//buf := make([]byte, 512)
 		//
 		//length, err := conn.Read(buf)
@@ -80,11 +103,9 @@ func (s *Server) Handle(conn net.Conn) {
 		msg := string(buf[:length])
 		if "CLOSE" == msg {
 			break
-		} else if "HEARTBEAT" == msg {
-			HeartBeat(conn)
-		} else {
-			log.Println("message: " + string(buf[:length]))
 		}
+
+		log.Println("message: " + string(buf[:length]))
 
 		_, err = conn.Write(buf)
 		if err != nil {
@@ -94,12 +115,9 @@ func (s *Server) Handle(conn net.Conn) {
 	}
 }
 
-func HeartBeat(conn net.Conn) {
-	ipStr := conn.RemoteAddr().String()
-	c := &client.CliConn{Conn: conn, Uid: rand.Int31()}
-	clientMap[ipStr] = *c
+func (s *Server) HeartBeat(conn net.Conn) {
 }
 
-func Message(conn net.Conn) {
+func (s *Server) Message(conn net.Conn) {
 
 }
